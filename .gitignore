@@ -1,0 +1,30 @@
+# Virtual Environment
+venv/
+env/
+lbj/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Data files (don't commit raw data)
+data/raw/
+data/processed/
+
+# Environment variables
+.env
+config/.env
+
+# Logs
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
