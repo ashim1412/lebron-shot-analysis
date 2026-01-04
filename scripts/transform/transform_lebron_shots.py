@@ -12,6 +12,9 @@ import json
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+from config.team_mapping import TEAM_MAPPING
+
 from config.transform_config import (
     SHOT_TYPE_MAPPING, SEASON_TYPES, POSTSEASON_ROUNDS, DATA_QUALITY
 )
@@ -140,7 +143,13 @@ class LeBronTransformer:
         print("[STEP 5/6] Adding derived columns...", end=" ")
         
         # Extract season from api_extraction_season
-        self.df['SEASON'] = self.df['api_extraction_season']
+        
+        def format_season(year):
+            start_year = int(year)
+            end_year = str(start_year + 1)[-2:]  # take last two digits of next year
+            return f"{start_year}-{end_year}"
+        
+        self.df['SEASON'] = self.df['api_extraction_season'].apply(format_season)
         
         # Determine if postseason
         self.df['IS_POSTSEASON'] = (
@@ -148,8 +157,8 @@ class LeBronTransformer:
         ).astype(int)
         
         # Parse game date
-        self.df['GAME_DATE'] = pd.to_datetime(self.df['GAME_DATE'])
-        
+        self.df['GAME_DATE'] = pd.to_datetime(self.df['GAME_DATE'], format='%Y%m%d')
+
         # Extract game year (for analysis purposes)
         self.df['GAME_YEAR'] = self.df['GAME_DATE'].dt.year
         
@@ -171,13 +180,42 @@ class LeBronTransformer:
                 return 'Beyond Arc'
         
         self.df['DISTANCE_CLASS'] = self.df['SHOT_DISTANCE'].apply(classify_distance)
+
+        # Mapping TEAM_ID to abbreviation
+        TEAM_ABBR_MAPPING = {
+            1610612739: 'CLE',  # Cleveland Cavaliers
+            1610612748: 'MIA',  # Miami Heat
+            1610612747: 'LAL',  # Los Angeles Lakers
+            # add others if needed
+        }
+
+        self.df['LEBRON_TEAM_ABBR'] = self.df['TEAM_ID'].map(TEAM_ABBR_MAPPING)
+
+        self.df['OPPONENT_TEAM_ABBR'] = self.df.apply(
+            lambda row: row['VTM'] if row['LEBRON_TEAM_ABBR'] == row['HTM'] else row['HTM'],
+            axis=1)
         
+        def get_team_id_by_abbr(abbr):
+            for nba_id, info in TEAM_MAPPING.items():
+                if info['abbreviation'] == abbr:
+                    return nba_id
+            return None
+        
+        self.df['OPPONENT_TEAM_ID'] = self.df['OPPONENT_TEAM_ABBR'].apply(get_team_id_by_abbr)
+        
+        # Create HOME_AWAY column
+        self.df['HOME_AWAY'] = self.df.apply(
+            lambda row: 'AWAY' if row['LEBRON_TEAM_ABBR'] == row['VTM'] else 'HOME',
+            axis=1
+            )
+
         print(f"✓")
         self.transform_log['steps'].append({
             'step': 'add_derived_columns',
             'new_columns': [
                 'SEASON', 'IS_POSTSEASON', 'GAME_DATE', 'GAME_YEAR', 
-                'SHOT_MADE', 'SHOT_MISSED', 'DISTANCE_CLASS'
+                'SHOT_MADE', 'SHOT_MISSED', 'DISTANCE_CLASS','LEBRON_TEAM_ABBR',
+                'OPPONENT_TEAM_ABBR','HOME_AWAY'
             ]
         })
     
@@ -218,17 +256,22 @@ class LeBronTransformer:
             'SEASON',
             'IS_POSTSEASON',
             'TEAM_ID',
-            'OPPONENT_TEAM_ID',
             'SHOT_TYPE_STD',
             'SHOT_MADE',
-            'SHOT_MISSED',
             'LOC_X',
             'LOC_Y',
             'SHOT_DISTANCE',
+            'SHOT_ZONE_BASIC',
+            'SHOT_ZONE_AREA',
+            'ACTION_TYPE',
             'DISTANCE_CLASS',
             'QUARTER',
             'MINUTES_REMAINING',
-            'SECONDS_REMAINING'
+            'SECONDS_REMAINING',
+            'LEBRON_TEAM_ABBR',
+            'OPPONENT_TEAM_ABBR',
+            'OPPONENT_TEAM_ID',
+            'HOME_AWAY'
         ]
         
         # Only select columns that exist

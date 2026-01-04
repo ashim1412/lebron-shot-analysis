@@ -91,3 +91,17 @@ CREATE INDEX idx_games_season_date
     ON games(season, game_date);
 
 
+ALTER TABLE shots
+ADD COLUMN shot_zone_basic VARCHAR(50),
+ADD COLUMN shot_zone_area VARCHAR(50),
+ADD COLUMN action_type VARCHAR(100),
+ADD COLUMN distance_class VARCHAR(20),
+ADD COLUMN minutes_remaining INT,
+ADD COLUMN seconds_remaining INT;
+
+ALTER TABLE games
+ALTER COLUMN season TYPE VARCHAR(7);
+
+ALTER TABLE shots
+ALTER COLUMN season TYPE VARCHAR(7);
+
