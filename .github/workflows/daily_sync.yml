@@ -1,0 +1,35 @@
+name: NBA Shot Daily Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at midnight UTC
+  workflow_dispatch:      # This allows us to trigger it manually for testing!
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run NBA Extraction
+        env:
+          NBA_USER_AGENT: ${{ secrets.NBA_USER_AGENT }}
+          NBA_REFERER: ${{ secrets.NBA_REFERER }}
+        run: python scripts/extract_shots.py
+
+      - name: Commit and Push new data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/raw/*.parquet
+          git commit -m "Update NBA shot data" || echo "No changes to commit"
+          git push
