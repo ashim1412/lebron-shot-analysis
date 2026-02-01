@@ -24,7 +24,7 @@ jobs:
         env:
           NBA_USER_AGENT: ${{ secrets.NBA_USER_AGENT }}
           NBA_REFERER: ${{ secrets.NBA_REFERER }}
-        run: python scripts/extract_shots.py
+        run: python scripts/extract.py
 
       - name: Commit and Push new data
         run: |
