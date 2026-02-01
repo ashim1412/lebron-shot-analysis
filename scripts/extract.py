@@ -6,7 +6,7 @@ from nba_api.stats.endpoints import shotchartdetail
 from dotenv import load_dotenv
 
 load_dotenv()
-logger.add("logs/extraction_{time}.log", rotation="10 MB" level="INFO")
+logger.add("logs/extraction_{time}.log", rotation="10 MB", level="INFO")
 
 
 HEADERS = {
