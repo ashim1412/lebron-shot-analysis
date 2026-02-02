@@ -21,9 +21,6 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run NBA Extraction
-        env:
-          NBA_USER_AGENT: ${{ secrets.NBA_USER_AGENT }}
-          NBA_REFERER: ${{ secrets.NBA_REFERER }}
         run: python scripts/extract.py
 
       - name: Commit and Push new data
