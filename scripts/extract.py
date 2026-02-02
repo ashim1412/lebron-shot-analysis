@@ -31,9 +31,7 @@ def fetch_and_save_season(player_id, season_id, is_current = False):
             team_id=0,
             player_id=player_id,
             context_measure_simple='FGA',
-            season_nullable=season_id,
-            #headers=HEADERS,
-            timeout=60
+            season_nullable=season_id
         )
 
         df = response.get_data_frames()[0]
