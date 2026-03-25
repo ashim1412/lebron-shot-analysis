@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: stg_lebron_shots
+    description: >
+      Staging model for LeBron James shot attempts.
+      Cleans and standardizes raw shot data including:
+      - Converting uppercase columns to lowercase
+      - Parsing VARCHAR dates to proper DATE type
+      - Deriving opponent from home/visitor team logic
+      - Calculating time remaining in game
+
+    columns:
+      - name: season
+        description: "NBA season (e.g., '2003-04')"
+        tests:
+          - not_null
+
+      - name: game_date
+        description: "Date the game was played (converted from YYYYMMDD format)"
+        tests:
+          - not_null
+
+      - name: game_id
+        description: "Unique identifier for the game"
+        tests:
+          - not_null
+
+      - name: lebron_team_name
+        description: "Full name of LeBron's team for this game"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Cleveland Cavaliers', 'Miami Heat', 'Los Angeles Lakers']
+
+      - name: lebron_team_abbr
+        description: "Abbreviated name of LeBron's team"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['CLE', 'MIA', 'LAL']
+
+      - name: opponent_abbr
+        description: "Abbreviated name of opponent team (derived from HTM/VTM)"
+        tests:
+          - not_null
+
+      - name: is_home_game
+        description: "Boolean flag indicating if this was a home game for LeBron's team"
+        tests:
+          - not_null
+
+      - name: is_shot_made
+        description: "Boolean flag indicating if the shot was successful"
+        tests:
+          - not_null
+
+      - name: shot_type
+        description: "Type of shot (2PT Field Goal, 3PT Field Goal)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['2PT Field Goal', '3PT Field Goal']
+
+      - name: shot_distance
+        description: "Distance of shot from basket in feet (2 shots in raw data have null distance - known data quality issue)"
+
+      - name: period
+        description: "Game period (1-4 for regulation, 5+ for overtime)"
+        tests:
+          - not_null
+
+      - name: seconds_remaining_in_game
+        description: "Total seconds remaining in the game when shot was taken"
+        tests:
+          - not_null

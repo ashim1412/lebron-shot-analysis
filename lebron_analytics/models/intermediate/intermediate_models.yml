@@ -1,0 +1,137 @@
+version: 2
+
+models:
+  - name: int_shots_with_era
+    description: >
+      Classifies shots into basketball eras based on the evolution of the game.
+      Dead-ball Era (2003-14): Physical, slower pace, less three-point shooting.
+      Three-point Era (2014+): Warriors revolution, analytics-driven, pace-and-space.
+    columns:
+      - name: era
+        description: "Basketball era classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Dead-ball Era', 'Three-point Era']
+
+      - name: season_start_year
+        description: "Starting year of the season as integer"
+        tests:
+          - not_null
+
+      - name: is_deadball_era
+        description: "Boolean flag for Dead-ball Era"
+        tests:
+          - not_null
+
+      - name: is_threepoint_era
+        description: "Boolean flag for Three-point Era"
+        tests:
+          - not_null
+
+  - name: int_shots_with_tenure
+    description: >
+      Classifies shots by LeBron's team tenure periods across his career.
+      Tracks his journey through four major periods with different teams.
+    columns:
+      - name: tenure
+        description: "Team tenure classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Cavs I', 'Heat', 'Cavs II', 'Lakers', 'Unknown']
+
+      - name: tenure_order
+        description: "Chronological order of tenure (1-4)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1, 2, 3, 4]
+
+      - name: years_experience
+        description: "Years of NBA experience (0 = rookie year)"
+        tests:
+          - not_null
+
+      - name: career_stage
+        description: "Career development stage"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Early Career', 'Prime I', 'Prime II', 'Late Career']
+
+  - name: int_shots_with_clutch
+    description: >
+      Flags clutch situations and adds game context for shot analysis.
+      Identifies high-pressure moments and categorizes shot characteristics.
+    columns:
+      - name: is_clutch_time
+        description: "Last 5 minutes of 4th quarter or overtime"
+        tests:
+          - not_null
+
+      - name: is_critical_time
+        description: "Last 2 minutes of 4th quarter or overtime"
+        tests:
+          - not_null
+
+      - name: is_final_possession
+        description: "Last 24 seconds (one possession)"
+        tests:
+          - not_null
+
+      - name: quarter_label
+        description: "Human-readable quarter label"
+        tests:
+          - not_null
+
+      - name: shot_distance_category
+        description: "Shot distance classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['At Rim', 'Close Range', 'Short Mid-range', 'Mid-range', 'Long Mid-range', 'Three-point']
+
+      - name: points_scored
+        description: "Points scored on this shot (0, 2, or 3)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 2, 3]
+
+  - name: int_shots_enriched
+    description: >
+      Fully enriched shot dataset combining all intermediate transformations.
+      This is the foundation for all analytics marts in Phase 4.
+      Includes era, tenure, clutch, and game context for every shot.
+    columns:
+      - name: game_id
+        description: "Unique game identifier"
+        tests:
+          - not_null
+
+      - name: era
+        description: "Basketball era (Dead-ball or Three-point)"
+        tests:
+          - not_null
+
+      - name: tenure
+        description: "LeBron's team tenure period"
+        tests:
+          - not_null
+
+      - name: is_clutch_time
+        description: "Clutch situation flag"
+        tests:
+          - not_null
+
+      - name: points_scored
+        description: "Points from this shot"
+        tests:
+          - not_null

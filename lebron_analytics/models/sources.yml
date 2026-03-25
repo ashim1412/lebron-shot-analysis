@@ -1,0 +1,44 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw LeBron James shot data loaded from parquet files"
+    schema: raw
+    tables:
+      - name: lebron_shots
+        description: "All of LeBron's shot attempts from 2003-04 to 2023-24 season. Contains uppercase column names and VARCHAR dates that need cleaning."
+        
+        columns:
+          - name: season
+            description: "NBA season added during load (e.g., '2003-04')"
+            tests:
+              - not_null
+          
+          - name: GAME_DATE
+            description: "Date as VARCHAR in YYYYMMDD format (e.g., '20240101')"
+            tests:
+              - not_null
+              
+          - name: GAME_ID
+            description: "Unique game identifier"
+            tests:
+              - not_null
+          
+          - name: TEAM_NAME
+            description: "Full name of LeBron's team"
+            
+          - name: HTM
+          - name: VTM
+          - name: SHOT_MADE_FLAG
+            description: "1 if shot made, 0 if missed"
+            tests:
+              - not_null
+          
+          - name: SHOT_TYPE
+          - name: SHOT_DISTANCE
+            description: "Distance from basket in feet"
+            
+          - name: PERIOD
+          - name: MINUTES_REMAINING
+          - name: SECONDS_REMAINING
+            description: "Seconds remaining in period"

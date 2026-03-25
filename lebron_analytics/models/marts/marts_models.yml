@@ -1,0 +1,193 @@
+version: 2
+
+models:
+  - name: mart_era_analysis
+    description: >
+      Analyzes how LeBron's shot selection evolved across basketball eras.
+      Dead-ball Era (2003-14) vs Three-point Era (2014+).
+      Contains era-level aggregates joined with per-season detail rows.
+    columns:
+      - name: era
+        description: "Basketball era classification (Dead-ball Era or Three-point Era)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Dead-ball Era', 'Three-point Era']
+
+      - name: season
+        description: "NBA season (one row per era-season combination)"
+        tests:
+          - not_null
+
+      - name: overall_fg_pct
+        description: "Era-level overall field goal percentage"
+        tests:
+          - not_null
+
+      - name: pct_shots_that_are_3pt
+        description: "Percentage of shots that are 3-pointers (measures shot selection evolution)"
+        tests:
+          - not_null
+
+      - name: total_shots
+        description: "Total shot attempts in this era"
+        tests:
+          - not_null
+
+  - name: mart_tenure_performance
+    description: >
+      Performance breakdown across LeBron's four team tenures:
+      Cavs I, Heat, Cavs II, and Lakers.
+      Contains tenure-level aggregates joined with per-season detail rows.
+    columns:
+      - name: tenure
+        description: "Team tenure classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Cavs I', 'Heat', 'Cavs II', 'Lakers']
+
+      - name: tenure_order
+        description: "Chronological order of tenure (1=Cavs I, 2=Heat, 3=Cavs II, 4=Lakers)"
+        tests:
+          - not_null
+
+      - name: season
+        description: "NBA season (one row per tenure-season combination)"
+        tests:
+          - not_null
+
+      - name: overall_fg_pct
+        description: "Tenure-level field goal percentage"
+        tests:
+          - not_null
+
+      - name: three_pt_rate
+        description: "Percentage of shots taken from three-point range"
+        tests:
+          - not_null
+
+      - name: total_shots
+        description: "Total shot attempts during this tenure"
+        tests:
+          - not_null
+
+  - name: mart_clutch_gene
+    description: >
+      Compares LeBron's performance in clutch vs regular situations.
+      Clutch = last 5 minutes of 4th quarter or overtime.
+      Includes critical time (<2 min) and final possession (<24s) breakdowns.
+      Also shows clutch performance by tenure for historical context.
+    columns:
+      - name: situation
+        description: "Situation label (Clutch or Regular)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Clutch', 'Regular']
+
+      - name: is_clutch_time
+        description: "Boolean flag for clutch situation"
+        tests:
+          - not_null
+
+      - name: fg_pct
+        description: "Field goal percentage in this situation"
+        tests:
+          - not_null
+
+      - name: total_shots
+        description: "Total shot attempts in this situation"
+        tests:
+          - not_null
+
+      - name: points_per_shot
+        description: "Points scored per shot attempt (scoring efficiency)"
+        tests:
+          - not_null
+
+  - name: mart_opponent_analysis
+    description: >
+      LeBron's shot performance against each opponent team.
+      Includes FG%, shot volume, shot selection, clutch performance,
+      game-winning shot attempts, and home/away splits.
+      Season trend data included for the top 10 most-faced opponents.
+    columns:
+      - name: opponent_abbr
+        description: "Opponent team abbreviation"
+        tests:
+          - not_null
+
+      - name: total_shots
+        description: "Total shot attempts against this opponent"
+        tests:
+          - not_null
+
+      - name: fg_pct
+        description: "Overall field goal percentage against this opponent"
+        tests:
+          - not_null
+
+      - name: games_played
+        description: "Number of games played against this opponent"
+        tests:
+          - not_null
+
+      - name: rank_by_shots
+        description: "Opponent rank ordered by total shots faced (1 = most shots attempted against)"
+        tests:
+          - not_null
+
+  - name: mart_best_seasons
+    description: >
+      One row per season with volume, scoring, and effectiveness metrics plus
+      rank columns for each dimension. Covers full career 2003-04 onwards.
+    columns:
+      - name: season
+        description: "NBA season label (e.g. 2012-13)"
+        tests:
+          - not_null
+          - unique
+
+      - name: total_shots
+        description: "Total shot attempts in the season"
+        tests:
+          - not_null
+
+      - name: total_points
+        description: "Total field-goal points scored in the season"
+        tests:
+          - not_null
+
+      - name: fg_pct
+        description: "Overall field goal percentage for the season"
+        tests:
+          - not_null
+
+      - name: points_per_shot
+        description: "Points scored per shot attempt"
+        tests:
+          - not_null
+
+      - name: rank_by_shots
+        description: "Season rank by total shot volume (1 = most shots)"
+        tests:
+          - not_null
+
+      - name: rank_by_points
+        description: "Season rank by total field-goal points (1 = most points)"
+        tests:
+          - not_null
+
+      - name: rank_by_fg_pct
+        description: "Season rank by FG% (1 = highest)"
+        tests:
+          - not_null
+
+      - name: rank_by_pps
+        description: "Season rank by points per shot (1 = highest)"
+        tests:
+          - not_null

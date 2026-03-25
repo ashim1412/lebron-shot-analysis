@@ -1,0 +1,43 @@
+scripts/generators/
+
+# database file — rebuild with load_data.py + dbt run
+lebron_analytics/lebron_analytics.duckdb
+lebron_analytics.duckdb
+
+# dbt
+lebron_analytics/target/
+lebron_analytics/logs/
+lebron_analytics/.user.yml
+
+
+# virtual environment
+venv/
+.venv/
+
+# environment variables
+.env
+
+lbj/
+__pycache__/
+*.pyc
+*.pyo
+.python-version
+
+# logs
+logs/
+
+# data files — large, kept locally
+data/raw/
+
+
+# jupyter checkpoints
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# os
+.DS_Store
+Thumbs.db
+
+analysis/analysis_data.json
+analysis/insights.txt
+
